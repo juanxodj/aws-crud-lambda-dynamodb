@@ -1,9 +1,11 @@
 const AWS = require("aws-sdk");
+const middy = require("@middy/core");
+const jsonBodyParser = require("@middy/http-json-body-parser");
 
 const updateTask = async (event) => {
   const dynamoDB = new AWS.DynamoDB.DocumentClient();
   const { id } = event.pathParameters;
-  const { title, description, done } = JSON.parse(event.body);
+  const { title, description, done } = event.body;
 
   const params = {
     TableName: "TaskTable",
@@ -34,4 +36,4 @@ const updateTask = async (event) => {
   }
 };
 
-module.exports = { updateTask };
+module.exports = { updateTask: middy(updateTask).use(jsonBodyParser()) };
